@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 from hypothesis import given
-from hypothesis.strategies import sampled_from, text
+from hypothesis.strategies import text
 
 from afspec import (
     IntentError,
@@ -437,16 +437,25 @@ def test_archive_superseded(
 # ---------------------------------------------------------------------------
 
 
-@given(
-    current=sampled_from(list(Status)),
-    target=sampled_from(list(Status)),
+@pytest.mark.parametrize(
+    "current,target",
+    [
+        (c, t)
+        for c in Status
+        for t in Status
+    ],
+    ids=[f"{c.value}->{t.value}" for c in Status for t in Status],
 )
 def test_property_lifecycle_transitions(
-    current: Status, target: Status
+    current: Status,
+    target: Status,
+    draft_spec_dir: Path,
+    tmp_path: Path,
 ) -> None:
     """For all (current, target) pairs, transition succeeds iff the pair is legal.
 
     The target 'superseded' must always be rejected (use supersede() instead).
+    Uses real specs and real temp directories — no mocking.
     """
     legal_pairs = {
         (Status.DRAFT, Status.ACTIVE),
@@ -454,26 +463,24 @@ def test_property_lifecycle_transitions(
         (Status.SEALED, Status.ARCHIVED),
         (Status.DRAFT, Status.ARCHIVED),
     }
-    # We cannot easily create a spec in every state without working stubs,
-    # but the test structure is correct.  Build a minimal spec via the helper.
-    # This will fail at the first stub call, which is the expected outcome.
-    from unittest.mock import MagicMock
 
-    spec = MagicMock()
-    spec.prd.frontmatter.status = current
+    sub = tmp_path / f"{current.value}_{target.value}"
+    spec, spec_dir = _make_spec_in_state(current, sub, draft_spec_dir)
 
     if target == Status.SUPERSEDED:
         # Must always reject — superseded is not a valid transition() target
         with pytest.raises(LifecycleError):
-            transition(spec, target, "/tmp/fake")
+            transition(spec, target, spec_dir)
     elif (current, target) in legal_pairs:
-        # Should succeed
-        result = transition(spec, target, "/tmp/fake")
+        # Should succeed and persist
+        result = transition(spec, target, spec_dir)
         assert result.prd.frontmatter.status == target
+        reloaded = load_spec(spec_dir)
+        assert reloaded.prd.frontmatter.status == target
     else:
         # Should raise
         with pytest.raises(LifecycleError):
-            transition(spec, target, "/tmp/fake")
+            transition(spec, target, spec_dir)
 
 
 # ---------------------------------------------------------------------------
@@ -550,14 +557,20 @@ def test_smoke_supersede_archive(
     root = tmp_spec_dir / "root"
     root.mkdir()
 
-    # Set up two sealed specs
-    alpha_dir = root / "01_alpha"
-    spec_alpha, _ = _make_spec_in_state(Status.SEALED, alpha_dir, draft_spec_dir)
-    alpha_spec_dir = alpha_dir / "spec"
+    # Set up two sealed specs as direct children of root (not nested in a
+    # helper-created 'spec/' subdirectory) so that move_to_archive moves a
+    # folder with a meaningful name into archive/.
+    alpha_spec_dir = root / "01_alpha"
+    shutil.copytree(draft_spec_dir, alpha_spec_dir)
+    spec_alpha = load_spec(alpha_spec_dir)
+    spec_alpha = transition(spec_alpha, Status.ACTIVE, alpha_spec_dir)
+    spec_alpha = transition(spec_alpha, Status.SEALED, alpha_spec_dir)
 
-    beta_dir = root / "02_beta"
-    spec_beta, _ = _make_spec_in_state(Status.SEALED, beta_dir, draft_spec_dir)
-    beta_spec_dir = beta_dir / "spec"
+    beta_spec_dir = root / "02_beta"
+    shutil.copytree(draft_spec_dir, beta_spec_dir)
+    spec_beta = load_spec(beta_spec_dir)
+    spec_beta = transition(spec_beta, Status.ACTIVE, beta_spec_dir)
+    spec_beta = transition(spec_beta, Status.SEALED, beta_spec_dir)
 
     # 1. Supersede alpha → persists banner and status to disk
     result = supersede(spec_alpha, "03_gamma", alpha_spec_dir)
@@ -580,11 +593,17 @@ def test_smoke_supersede_archive(
 
     # 4. Move superseded spec to archive (skip transition, just move)
     move_to_archive(alpha_spec_dir, root)
-    assert (root / "archive" / "spec").exists() or (root / "archive" / "01_alpha").exists() or any(
-        (root / "archive").iterdir()
-    )
-    assert not alpha_spec_dir.exists()
+    assert not alpha_spec_dir.exists(), "Original alpha directory should be gone"
+    alpha_archive = root / "archive" / "01_alpha"
+    assert alpha_archive.exists(), "Alpha should be in archive/01_alpha"
+    reloaded_alpha = load_spec(alpha_archive)
+    assert reloaded_alpha.prd.frontmatter.status == Status.SUPERSEDED
+    assert reloaded_alpha.prd.body.startswith("> **SUPERSEDED** by spec 03_gamma")
 
     # 5. Move sealed spec to archive (transitions to archived)
     move_to_archive(beta_spec_dir, root)
-    assert not beta_spec_dir.exists()
+    assert not beta_spec_dir.exists(), "Original beta directory should be gone"
+    beta_archive = root / "archive" / "02_beta"
+    assert beta_archive.exists(), "Beta should be in archive/02_beta"
+    reloaded_beta = load_spec(beta_archive)
+    assert reloaded_beta.prd.frontmatter.status == Status.ARCHIVED

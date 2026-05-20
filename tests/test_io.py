@@ -151,12 +151,31 @@ def test_updated_at_auto_set(valid_spec_dir: Path, tmp_spec_dir: Path) -> None:
 
 
 def test_coverage_auto_computed(valid_spec_dir: Path, tmp_spec_dir: Path) -> None:
-    """Save and reload; coverage.requirements_covered should be non-empty."""
-    spec = afspec.load_spec(valid_spec_dir)
-    afspec.save(spec, tmp_spec_dir)
+    """Save and reload; coverage must list covered IDs and gap IDs separately.
 
+    Constructs a spec with partial coverage: one requirement criterion is
+    tested ("01-REQ-1.1"), one is not ("01-REQ-1.E1").  After save, the
+    covered list must contain the tested ID and the gaps list must contain
+    the untested ID.
+    """
+    spec = afspec.load_spec(valid_spec_dir)
+
+    # Remove the edge_case_test that covers 01-REQ-1.E1 so it becomes a gap.
+    # The golden fixture's test_spec has an edge_case_test covering 01-REQ-1.E1.
+    spec = spec.model_copy(
+        update={
+            "test_spec": spec.test_spec.model_copy(update={"edge_case_tests": []}),
+        }
+    )
+
+    afspec.save(spec, tmp_spec_dir)
     reloaded = afspec.load_spec(tmp_spec_dir)
-    assert len(reloaded.test_spec.coverage.requirements_covered) > 0
+
+    # The test case for 01-REQ-1.1 should still be covered
+    assert "01-REQ-1.1" in reloaded.test_spec.coverage.requirements_covered
+
+    # The edge case 01-REQ-1.E1 should now be a gap (no edge_case_test covers it)
+    assert "01-REQ-1.E1" in reloaded.test_spec.coverage.gaps
 
 
 # ---------------------------------------------------------------------------
