@@ -426,7 +426,9 @@ def test_archive_superseded(
 
     move_to_archive(spec_dir / "spec", root)
 
-    archive_dir = root / "archive" / "super_spec"
+    # _make_spec_in_state copies into a "spec" subdirectory via _copy_draft,
+    # so the folder actually moved is named "spec", not "super_spec".
+    archive_dir = root / "archive" / "spec"
     assert archive_dir.exists()
     archived = load_spec(archive_dir)
     assert archived.prd.frontmatter.status == Status.SUPERSEDED

@@ -254,38 +254,38 @@ the quality gate from the start.
     - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
     - [x] Requirements 01-REQ-5.1 through 01-REQ-5.7 acceptance criteria met
 
-- [ ] 8. Lifecycle Management and Bootstrap
-  - [ ] 8.1 Implement lifecycle state machine in lifecycle.py
+- [x] 8. Lifecycle Management and Bootstrap
+  - [x] 8.1 Implement lifecycle state machine in lifecycle.py
     - `_is_legal_transition` function
     - `transition(spec, target, dir)` function
     - Intent hash computation and storage on draft→active
     - Mutation guards (immutable fields, intent hash)
     - _Requirements: 01-REQ-6.1, 01-REQ-6.2, 01-REQ-6.3, 01-REQ-6.4, 01-REQ-6.5_
 
-  - [ ] 8.2 Implement supersede in lifecycle.py
+  - [x] 8.2 Implement supersede in lifecycle.py
     - `supersede(spec, superseding_spec_id, dir)` function
     - Deprecation banner prepend
     - Internal save
     - _Requirements: 01-REQ-6.6_
 
-  - [ ] 8.3 Implement move_to_archive in lifecycle.py
+  - [x] 8.3 Implement move_to_archive in lifecycle.py
     - `move_to_archive(spec_dir, root)` function
     - Load, transition (if needed), save, move folder
     - Handle all state combinations
     - _Requirements: 01-REQ-6.7_
 
-  - [ ] 8.4 Implement bootstrap in bootstrap.py
+  - [x] 8.4 Implement bootstrap in bootstrap.py
     - `BootstrapSpec` class
     - `set_prd`, `set_requirements`, `set_test_spec`, `set_tasks` methods
     - `finalize` method with validation
     - _Requirements: 01-REQ-7.1, 01-REQ-7.2, 01-REQ-7.3_
 
-  - [ ] 8.V Verify task group 8
-    - [ ] Lifecycle tests pass: `uv run pytest -v -k 'test_lifecycle or test_transition or test_supersede or test_archive' tests/`
-    - [ ] Bootstrap tests pass: `uv run pytest -v -k 'test_bootstrap or test_finalize' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-6.1 through 01-REQ-6.7, 01-REQ-7.1 through 01-REQ-7.3 acceptance criteria met
+  - [x] 8.V Verify task group 8
+    - [x] Lifecycle tests pass: `uv run pytest -v -k 'test_lifecycle or test_transition or test_supersede or test_archive' tests/`
+    - [x] Bootstrap tests pass: `uv run pytest -v -k 'test_bootstrap or test_finalize' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-6.1 through 01-REQ-6.7, 01-REQ-7.1 through 01-REQ-7.3 acceptance criteria met
 
 - [ ] 9. Checkpoint - Validation and Lifecycle Complete
   - Ensure all validation and lifecycle tests pass.
