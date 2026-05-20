@@ -496,3 +496,95 @@ def test_property_intent_hash_stability(body: str) -> None:
     assert len(hash_lf) == 64
     assert re.fullmatch(r"[0-9a-f]{64}", hash_lf)
     assert hash_lf == hash_crlf
+
+
+# ---------------------------------------------------------------------------
+# TS-01-SMOKE-4: Lifecycle transition end-to-end (PATH-4)
+# ---------------------------------------------------------------------------
+
+
+def test_smoke_lifecycle_transition(
+    draft_spec_dir: Path, tmp_spec_dir: Path
+) -> None:
+    """Full lifecycle path: draft→active with intent hash, persist to disk,
+    then verify save fails after intent mutation.  No mocking.
+    """
+    spec_dir = _copy_draft(tmp_spec_dir, draft_spec_dir)
+    spec = load_spec(spec_dir)
+
+    # 1. Transition draft→active
+    result = transition(spec, Status.ACTIVE, spec_dir)
+    assert result.prd.frontmatter.status == Status.ACTIVE
+
+    # 2. Intent hash is populated and correct
+    intent_hash = result.prd.frontmatter.intent_hash
+    assert intent_hash is not None
+    assert len(intent_hash) == 64
+    assert re.fullmatch(r"[0-9a-f]{64}", intent_hash)
+
+    # 3. Persisted to disk correctly
+    reloaded = load_spec(spec_dir)
+    assert reloaded.prd.frontmatter.status == Status.ACTIVE
+    assert reloaded.prd.frontmatter.intent_hash == intent_hash
+
+    # 4. Modifying intent and saving must fail
+    result.prd.body = result.prd.body.replace(
+        "A draft feature for testing lifecycle transitions.",
+        "Completely changed intent that should be rejected.",
+    )
+    with pytest.raises((LifecycleError, IntentError)):
+        save(result, spec_dir)
+
+
+# ---------------------------------------------------------------------------
+# TS-01-SMOKE-9: Supersede and archive workflow end-to-end (PATH-4a, PATH-4b)
+# ---------------------------------------------------------------------------
+
+
+def test_smoke_supersede_archive(
+    draft_spec_dir: Path, tmp_spec_dir: Path
+) -> None:
+    """Full supersede→archive workflow: supersede a sealed spec, verify
+    persistence, reject public save, then move to archive.  No mocking.
+    """
+    root = tmp_spec_dir / "root"
+    root.mkdir()
+
+    # Set up two sealed specs
+    alpha_dir = root / "01_alpha"
+    spec_alpha, _ = _make_spec_in_state(Status.SEALED, alpha_dir, draft_spec_dir)
+    alpha_spec_dir = alpha_dir / "spec"
+
+    beta_dir = root / "02_beta"
+    spec_beta, _ = _make_spec_in_state(Status.SEALED, beta_dir, draft_spec_dir)
+    beta_spec_dir = beta_dir / "spec"
+
+    # 1. Supersede alpha → persists banner and status to disk
+    result = supersede(spec_alpha, "03_gamma", alpha_spec_dir)
+    assert result.prd.frontmatter.status == Status.SUPERSEDED
+    assert result.prd.body.startswith("> **SUPERSEDED** by spec 03_gamma")
+
+    reloaded = load_spec(alpha_spec_dir)
+    assert reloaded.prd.frontmatter.status == Status.SUPERSEDED
+    assert reloaded.prd.body.startswith("> **SUPERSEDED** by spec 03_gamma")
+
+    # 2. Public save rejects superseded spec
+    with pytest.raises(LifecycleError):
+        save(result, alpha_spec_dir)
+
+    # 3. Supersede rejects non-sealed
+    draft_sub = tmp_spec_dir / "draft_sub"
+    spec_draft, draft_dir = _make_spec_in_state(Status.DRAFT, draft_sub, draft_spec_dir)
+    with pytest.raises(LifecycleError):
+        supersede(spec_draft, "99", draft_dir)
+
+    # 4. Move superseded spec to archive (skip transition, just move)
+    move_to_archive(alpha_spec_dir, root)
+    assert (root / "archive" / "spec").exists() or (root / "archive" / "01_alpha").exists() or any(
+        (root / "archive").iterdir()
+    )
+    assert not alpha_spec_dir.exists()
+
+    # 5. Move sealed spec to archive (transitions to archived)
+    move_to_archive(beta_spec_dir, root)
+    assert not beta_spec_dir.exists()

@@ -175,35 +175,40 @@ def test_valid_transition() -> None:
 
 
 def test_sub_types() -> None:
-    """Verify all 17 sub-types are importable from afspec and have an 'id' field."""
+    """Verify all 17 sub-types are importable from afspec and have expected fields."""
     import afspec
 
-    expected_names = [
-        "Requirement",
-        "UserStory",
-        "CorrectnessProperty",
-        "ExecutionPath",
-        "PathStep",
-        "ErrorHandlingEntry",
-        "TestCase",
-        "PropertyTest",
-        "EdgeCaseTest",
-        "SmokeTest",
-        "Coverage",
-        "TaskGroup",
-        "Subtask",
-        "VerificationSubtask",
-        "TaskDependency",
-        "TraceabilityEntry",
-        "TestCommands",
-    ]
+    # Map each type to a key field it must declare per design.md.
+    # Not all types have an 'id' field — UserStory, PathStep, Coverage,
+    # TaskDependency, TraceabilityEntry, and TestCommands use other fields.
+    expected_types_and_fields: dict[str, str] = {
+        "Requirement": "id",
+        "UserStory": "role",
+        "CorrectnessProperty": "id",
+        "ExecutionPath": "id",
+        "PathStep": "actor",
+        "ErrorHandlingEntry": "id",
+        "TestCase": "id",
+        "PropertyTest": "id",
+        "EdgeCaseTest": "id",
+        "SmokeTest": "id",
+        "Coverage": "requirements_covered",
+        "TaskGroup": "id",
+        "Subtask": "id",
+        "VerificationSubtask": "id",
+        "TaskDependency": "depends_on_spec",
+        "TraceabilityEntry": "requirement_id",
+        "TestCommands": "spec_tests",
+    }
 
-    for name in expected_names:
+    for name, key_field in expected_types_and_fields.items():
         attr = getattr(afspec, name, None)
         assert attr is not None, f"{name} not importable from afspec"
         assert callable(attr), f"{name} is not callable"
-        # Each sub-type should declare model fields (stubs have none yet)
-        assert "id" in attr.model_fields, f"{name} should have an 'id' field"
+        # Each sub-type should declare model fields with the expected key field
+        assert key_field in attr.model_fields, (
+            f"{name} should have a '{key_field}' field"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -212,7 +217,9 @@ def test_sub_types() -> None:
 
 
 def test_constructors() -> None:
-    """Test create_spec and VerificationSubtask construction."""
+    """Test create_spec, Requirement, and VerificationSubtask construction."""
+    from afspec import Requirement, UserStory
+
     spec = create_spec("01", "my_spec")
 
     assert isinstance(spec, Spec)
@@ -224,6 +231,19 @@ def test_constructors() -> None:
     assert spec.test_spec.spec_id == "01"
     assert spec.tasks.spec_id == "01"
 
+    # Requirement construction: defaults for acceptance_criteria and edge_cases
+    req = Requirement(
+        id="01-REQ-1",
+        title="Data Model",
+        user_story=UserStory(role="dev", goal="types", benefit="safety"),
+    )
+    assert req.id == "01-REQ-1"
+    assert req.title == "Data Model"
+    assert req.user_story.role == "dev"
+    assert len(req.acceptance_criteria) == 0
+    assert len(req.edge_cases) == 0
+
+    # VerificationSubtask construction
     vs = VerificationSubtask(id="V-1", checks=["lint", "test"])
     assert vs.id == "V-1"
     assert vs.checks == ["lint", "test"]
@@ -376,7 +396,12 @@ def test_property_subtask_transitions(current: SubtaskState, target: SubtaskStat
     spec_name=sampled_from(["alpha", "beta", "gamma", "my_spec"]),
 )
 def test_property_constructor_completeness(spec_id: str, spec_name: str) -> None:
-    """create_spec produces a Spec where sub-artifacts share spec_id and spec_name."""
+    """create_spec produces a Spec where sub-artifacts share spec_id and spec_name.
+
+    Also verifies EARS criterion builders populate the correct pattern fields
+    and leave non-pattern fields at their defaults.
+    """
+    # Test create_spec
     spec = create_spec(spec_id, spec_name)
 
     assert isinstance(spec, Spec)
@@ -385,3 +410,39 @@ def test_property_constructor_completeness(spec_id: str, spec_name: str) -> None
     assert spec.requirements.spec_id == spec_id
     assert spec.test_spec.spec_id == spec_id
     assert spec.tasks.spec_id == spec_id
+
+    # Test EARS criterion builders — each must set the correct pattern and fields
+    cid = f"{spec_id}-REQ-1.1"
+
+    ub = ubiquitous_criterion(cid, "the system", "do it")
+    assert ub.ears_pattern == EARSPattern.UBIQUITOUS
+    assert ub.system == "the system"
+    assert ub.action == "do it"
+    assert ub.trigger is None
+    assert ub.state is None
+
+    ed = event_driven_criterion(cid, "click", "the form", "submit")
+    assert ed.ears_pattern == EARSPattern.EVENT_DRIVEN
+    assert ed.trigger == "click"
+    assert ed.condition is None
+
+    ce = complex_event_criterion(cid, "click", "valid", "the form", "submit")
+    assert ce.ears_pattern == EARSPattern.COMPLEX_EVENT
+    assert ce.trigger == "click"
+    assert ce.condition == "valid"
+    assert ce.state is None
+
+    sd = state_driven_criterion(cid, "idle", "the sched", "flush")
+    assert sd.ears_pattern == EARSPattern.STATE_DRIVEN
+    assert sd.state == "idle"
+    assert sd.trigger is None
+
+    uw = unwanted_criterion(cid, "timeout", "the client", "retry")
+    assert uw.ears_pattern == EARSPattern.UNWANTED
+    assert uw.error_condition == "timeout"
+    assert uw.feature is None
+
+    op = optional_criterion(cid, "export", "the report", "gen PDF")
+    assert op.ears_pattern == EARSPattern.OPTIONAL
+    assert op.feature == "export"
+    assert op.error_condition is None

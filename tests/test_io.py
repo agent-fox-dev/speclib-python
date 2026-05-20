@@ -313,12 +313,29 @@ def test_property_round_trip(valid_spec_dir: Path, tmp_spec_dir: Path) -> None:
 
 
 def test_property_atomic_save(valid_spec_dir: Path, tmp_spec_dir: Path) -> None:
-    """After a successful save, no .tmp files remain."""
+    """No .tmp files remain after a successful save OR a failed save."""
     spec = afspec.load_spec(valid_spec_dir)
-    afspec.save(spec, tmp_spec_dir)
 
+    # Success path: no temp files after a successful save
+    afspec.save(spec, tmp_spec_dir)
     tmp_files = list(tmp_spec_dir.glob("*.tmp*"))
-    assert tmp_files == [], f"Temporary files remain: {tmp_files}"
+    assert tmp_files == [], f"Temporary files remain after success: {tmp_files}"
+
+    # Failure path: inject a write failure and verify no temp files remain
+    fail_target = tmp_spec_dir / "fail_test"
+    fail_target.mkdir()
+    # Pre-create a file and make the directory read-only to provoke failure
+    (fail_target / "requirements.json").write_text("{}", encoding="utf-8")
+    os.chmod(fail_target, stat.S_IRUSR | stat.S_IXUSR)
+    try:
+        with pytest.raises(SaveError):
+            afspec.save(spec, fail_target)
+        # Restore permissions so we can inspect
+        os.chmod(fail_target, stat.S_IRWXU)
+        tmp_files = list(fail_target.glob("*.tmp*"))
+        assert tmp_files == [], f"Temporary files remain after failure: {tmp_files}"
+    finally:
+        os.chmod(fail_target, stat.S_IRWXU)
 
 
 # ---------------------------------------------------------------------------
@@ -327,8 +344,117 @@ def test_property_atomic_save(valid_spec_dir: Path, tmp_spec_dir: Path) -> None:
 
 
 def test_property_coverage_correctness(valid_spec_dir: Path) -> None:
-    """compute_coverage returns non-empty requirements_covered."""
+    """compute_coverage produces exact coverage sets: covered + gaps = all IDs."""
     spec = afspec.load_spec(valid_spec_dir)
 
     coverage = afspec.compute_coverage(spec.test_spec, spec.requirements)
-    assert len(coverage.requirements_covered) > 0
+
+    # Collect all requirement criterion IDs (acceptance_criteria + edge_cases)
+    all_req_ids: set[str] = set()
+    for r in spec.requirements.requirements:
+        for c in r.acceptance_criteria:
+            all_req_ids.add(c.id)
+        for c in r.edge_cases:
+            all_req_ids.add(c.id)
+
+    # Collect all correctness property IDs
+    all_prop_ids = {p.id for p in spec.requirements.correctness_properties}
+
+    # Collect all execution path IDs
+    all_path_ids = {p.id for p in spec.requirements.execution_paths}
+
+    # All covered + all gaps should equal the full set of IDs
+    covered_set = set(coverage.requirements_covered) | set(coverage.properties_covered) | set(coverage.paths_covered)
+    gap_set = set(coverage.gaps)
+    all_ids = all_req_ids | all_prop_ids | all_path_ids
+
+    assert covered_set | gap_set == all_ids, (
+        f"covered ∪ gaps should equal all IDs. "
+        f"Missing: {all_ids - (covered_set | gap_set)}, "
+        f"Extra: {(covered_set | gap_set) - all_ids}"
+    )
+
+    # Covered and gaps should be disjoint
+    assert covered_set & gap_set == set(), (
+        f"covered ∩ gaps should be empty, but found: {covered_set & gap_set}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# TS-01-SMOKE-1: Load spec from disk end-to-end (PATH-1)
+# ---------------------------------------------------------------------------
+
+
+def test_smoke_load_spec(valid_spec_dir: Path) -> None:
+    """Full end-to-end load: all four artifacts populated with rich content.
+
+    Checks acceptance_criteria >= 1, task_groups >= 1, and all 12 frontmatter
+    fields exist.  No mocking of file I/O or JSON parsing.
+    """
+    spec = afspec.load_spec(valid_spec_dir)
+
+    # All four artifacts populated with non-empty spec_id
+    assert spec.prd.frontmatter.spec_id != ""
+    assert spec.requirements.spec_id != ""
+    assert spec.test_spec.spec_id != ""
+    assert spec.tasks.spec_id != ""
+
+    # PRD frontmatter has all 12 fields
+    fm = spec.prd.frontmatter
+    assert fm.title != ""
+    assert fm.status is not None
+    assert fm.created_at != ""
+    assert fm.updated_at != ""
+    assert fm.owner != ""
+    assert fm.source != ""
+    assert fm.schema_version >= 1
+
+    # Requirements has at least one requirement with acceptance criteria
+    assert len(spec.requirements.requirements) >= 1
+    assert len(spec.requirements.requirements[0].acceptance_criteria) >= 1
+
+    # TestSpec has at least one test case
+    assert len(spec.test_spec.test_cases) >= 1
+
+    # Tasks has at least one task group
+    assert len(spec.tasks.task_groups) >= 1
+
+
+# ---------------------------------------------------------------------------
+# TS-01-SMOKE-2: Save spec to disk end-to-end (PATH-2)
+# ---------------------------------------------------------------------------
+
+
+def test_smoke_save(valid_spec_dir: Path, tmp_spec_dir: Path) -> None:
+    """Full end-to-end save: coverage computation + updated_at + deterministic JSON.
+
+    Verifies the complete save path through coverage auto-computation,
+    updated_at refresh, serialization, and atomic writes.  No mocking.
+    """
+    spec = afspec.load_spec(valid_spec_dir)
+    original_updated = spec.prd.frontmatter.updated_at
+
+    afspec.save(spec, tmp_spec_dir)
+
+    # All four files written
+    for name in ["prd.md", "requirements.json", "test_spec.json", "tasks.json"]:
+        assert (tmp_spec_dir / name).exists(), f"{name} was not written"
+
+    # Reload and verify
+    reloaded = afspec.load_spec(tmp_spec_dir)
+
+    # updated_at changed
+    assert reloaded.prd.frontmatter.updated_at != original_updated
+
+    # Coverage populated
+    assert len(reloaded.test_spec.coverage.requirements_covered) > 0
+
+    # JSON files are valid and deterministic
+    for name in ["requirements.json", "test_spec.json", "tasks.json"]:
+        content = (tmp_spec_dir / name).read_text(encoding="utf-8")
+        parsed = json.loads(content)
+        assert isinstance(parsed, dict), f"{name} is not valid JSON"
+
+    # No temp files remain
+    tmp_files = list(tmp_spec_dir.glob("*.tmp*"))
+    assert tmp_files == [], f"Temporary files remain: {tmp_files}"

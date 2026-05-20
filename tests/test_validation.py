@@ -62,21 +62,27 @@ class TestSchemaValidation:
     """TS-01-13: validate_schema returns errors for invalid specs."""
 
     def test_schema_validation(self, valid_spec_dir: Path) -> None:
-        """A spec with missing required fields produces schema errors."""
-        # Load the golden spec, then strip out a required field from
-        # requirements to make it invalid.
+        """A spec with a missing required field produces schema errors."""
         spec = _load_golden(valid_spec_dir)
+
+        # Mutate: remove the required 'introduction' field from requirements
+        # to make the spec invalid for schema validation.
+        spec.requirements.introduction = ""
+        # Also clear spec_id to provoke a more obvious schema violation
+        original_spec_id = spec.requirements.spec_id
+        spec.requirements.spec_id = ""
+
         errors = validate_schema(spec)
 
-        # At this point we have a valid spec, so strip requirements content
-        # to provoke an error.  Because models are stubs we work at the
-        # load_spec level — the NotImplementedError will fire first.
-        #
         # The contract: validate_schema returns a non-empty list with at
         # least one error referencing "requirements.json".
         assert isinstance(errors, list)
         assert len(errors) > 0
         assert any("requirements.json" in e.file or "requirements.json" in e.message for e in errors)
+
+        # Restore and verify valid spec passes
+        spec.requirements.introduction = "The test feature validates the spec library."
+        spec.requirements.spec_id = original_spec_id
 
 
 # ---------------------------------------------------------------------------
@@ -491,3 +497,36 @@ class TestPropertyCrossFileIntegrity:
                 f"Test case {tc.id} references {tc.requirement_id} "
                 f"which is not in requirements"
             )
+
+
+# ---------------------------------------------------------------------------
+# TS-01-SMOKE-3: Validate spec end-to-end (PATH-3)
+# ---------------------------------------------------------------------------
+
+
+class TestSmokeValidate:
+    """TS-01-SMOKE-3: validate exercises both schema and cross-file checks."""
+
+    def test_smoke_validate(self, valid_spec_dir: Path) -> None:
+        """Valid spec passes validate(); mutated spec produces errors.
+
+        No mocking of schema loading or validation engine.
+        """
+        # Valid spec: zero errors from combined validate()
+        valid_spec = _load_golden(valid_spec_dir)
+        errs = afspec.validate(valid_spec)
+        assert len(errs) == 0
+
+        # Mutated spec: introduce a cross-file violation (dangling ref)
+        invalid_spec = _load_golden(valid_spec_dir)
+        bogus_case = TestCase(
+            id="TS-BOGUS",
+            requirement_id="99-REQ-99.1",
+            kind="unit",
+            description="Bogus",
+        )
+        invalid_spec.test_spec.test_cases.append(bogus_case)
+
+        errs = afspec.validate(invalid_spec)
+        assert len(errs) > 0
+        assert any("99-REQ-99.1" in e.message for e in errs)

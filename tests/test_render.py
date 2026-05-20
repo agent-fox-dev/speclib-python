@@ -141,10 +141,25 @@ def test_render_tasks(valid_spec_dir: Path) -> None:
 def test_render_combined(valid_spec_dir: Path) -> None:
     spec = load_spec(valid_spec_dir)
     md = render_combined(spec)
-    # PRD body comes first, then rendered requirements, test spec, tasks
-    assert "---" in md
-    req_start = md.index("# Requirements") if "# Requirements" in md else md.index("## Requirements")
-    assert req_start > 0
+
+    # PRD body comes first (contains "## Intent" from the golden fixture)
+    assert "## Intent" in md
+
+    # All four sections must appear and in the correct order:
+    # PRD body < requirements < test spec < tasks
+    prd_marker = md.index("## Intent")
+
+    # Requirements section (rendered heading)
+    req_start = md.index("# Requirements")
+    assert req_start > prd_marker, "Requirements section must come after PRD body"
+
+    # Test Specification section
+    ts_start = md.index("# Test Specification")
+    assert ts_start > req_start, "Test Specification must come after Requirements"
+
+    # Implementation Plan (tasks) section
+    tasks_start = md.index("# Implementation Plan")
+    assert tasks_start > ts_start, "Implementation Plan must come after Test Specification"
 
 
 # ---------------------------------------------------------------------------
