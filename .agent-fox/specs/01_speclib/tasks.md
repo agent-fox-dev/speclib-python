@@ -292,39 +292,39 @@ the quality gate from the start.
   - Run full property test suite.
   - Update documentation if needed.
 
-- [ ] 10. Markdown Rendering
-  - [ ] 10.1 Implement EARS sentence rendering in ears.py
+- [x] 10. Markdown Rendering
+  - [x] 10.1 Implement EARS sentence rendering in ears.py
     - `render_ears_sentence(criterion)` function
     - Six EARS templates
     - Return contract appending
     - _Requirements: 01-REQ-8.2_
 
-  - [ ] 10.2 Implement render_requirements in render.py
+  - [x] 10.2 Implement render_requirements in render.py
     - Introduction, glossary table, requirements with EARS-rendered criteria
     - Correctness properties, execution paths, error handling table
     - _Requirements: 01-REQ-8.1_
 
-  - [ ] 10.3 Implement render_test_spec in render.py
+  - [x] 10.3 Implement render_test_spec in render.py
     - Test cases, property tests, edge case tests, smoke tests, coverage summary
     - _Requirements: 01-REQ-8.3_
 
-  - [ ] 10.4 Implement render_tasks in render.py
+  - [x] 10.4 Implement render_tasks in render.py
     - Test commands, dependencies table, task groups with checkbox subtasks
     - Traceability table
     - Subtask state to checkbox mapping
     - Optional subtask marking
     - _Requirements: 01-REQ-8.4_
 
-  - [ ] 10.5 Implement render_combined in render.py
+  - [x] 10.5 Implement render_combined in render.py
     - PRD body (as-is) + rendered requirements + test_spec + tasks
     - _Requirements: 01-REQ-8.5_
 
-  - [ ] 10.V Verify task group 10
-    - [ ] Render tests pass: `uv run pytest -v -k 'test_render or test_ears' tests/`
-    - [ ] Deterministic rendering property test passes: `uv run pytest -v -k 'test_property_deterministic' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-8.1 through 01-REQ-8.6 acceptance criteria met
+  - [x] 10.V Verify task group 10
+    - [x] Render tests pass: `uv run pytest -v -k 'test_render or test_ears' tests/`
+    - [x] Deterministic rendering property test passes: `uv run pytest -v -k 'test_property_deterministic' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-8.1 through 01-REQ-8.6 acceptance criteria met
 
 - [ ] 11. Spec Root Discovery
   - [ ] 11.1 Implement discover_specs in discovery.py
