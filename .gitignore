@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# agent-fox
+.agent-fox/*
+!.agent-fox/config.toml
+!.agent-fox/steering.md
+!.agent-fox/specs/
+!.agent-fox/profiles/
+!.agent-fox/profiles/*
+.claude/worktrees/
