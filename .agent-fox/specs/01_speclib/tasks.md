@@ -346,8 +346,8 @@ the quality gate from the start.
     - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
     - [x] Requirements 01-REQ-9.1 through 01-REQ-9.5 acceptance criteria met
 
-- [ ] 12. Programmatic Construction API
-  - [ ] 12.1 Implement collection mutation functions in mutate.py
+- [x] 12. Programmatic Construction API
+  - [x] 12.1 Implement collection mutation functions in mutate.py
     - `add_requirement`, `get_requirement`, `remove_requirement`
     - `set_glossary_entry`, `remove_glossary_entry`
     - `add_correctness_property`, `add_execution_path`, `add_error_handling`
@@ -357,18 +357,18 @@ the quality gate from the start.
     - Duplicate ID detection with `ValueError`
     - _Requirements: 01-REQ-11.1, 01-REQ-11.2, 01-REQ-11.3, 01-REQ-11.4, 01-REQ-11.6_
 
-  - [ ] 12.2 Implement ID generation helpers in mutate.py
+  - [x] 12.2 Implement ID generation helpers in mutate.py
     - `next_requirement_id`, `next_criterion_id`, `next_edge_case_id`
     - `next_correctness_property_id`, `next_execution_path_id`, `next_error_handling_id`
     - `next_test_case_id`, `next_property_test_id`, `next_edge_case_test_id`, `next_smoke_test_id`
     - _Requirements: 01-REQ-11.5_
 
-  - [ ] 12.V Verify task group 12
-    - [ ] Mutation tests pass: `uv run pytest -v -k 'test_add or test_get or test_remove or test_set_glossary or test_next' tests/`
-    - [ ] Collection mutation property test passes: `uv run pytest -v -k 'test_property_mutation' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-11.1 through 01-REQ-11.7 acceptance criteria met
+  - [x] 12.V Verify task group 12
+    - [x] Mutation tests pass: `uv run pytest -v -k 'test_add or test_get or test_remove or test_set_glossary or test_next' tests/`
+    - [x] Collection mutation property test passes: `uv run pytest -v -k 'test_property_mutation' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-11.1 through 01-REQ-11.7 acceptance criteria met
 
 - [ ] 13. Wiring verification
 
