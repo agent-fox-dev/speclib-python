@@ -11,6 +11,7 @@ import os
 import re
 import tempfile
 from datetime import datetime, timezone
+from enum import Enum
 from pathlib import Path
 from typing import Any, Union
 
@@ -153,7 +154,8 @@ def load_spec(dir: Union[str, Path]) -> Spec:
 def _serialize_value(obj: Any) -> Any:
     """Recursively prepare a value for JSON serialization.
 
-    - Pydantic models → dict via model_dump (by_alias, exclude_none for Criterion pattern fields)
+    - Pydantic models → dict via _serialize_model (handles Criterion omitempty)
+    - Enums → their string value
     - dicts → sorted keys
     - lists → preserve order
     - Everything else → as-is
@@ -164,44 +166,36 @@ def _serialize_value(obj: Any) -> Any:
         return {k: _serialize_value(v) for k, v in sorted(obj.items())}
     if isinstance(obj, list):
         return [_serialize_value(item) for item in obj]
-    if isinstance(obj, type) and issubclass(obj, str):
-        return str(obj)
+    if isinstance(obj, Enum):
+        return obj.value
     return obj
 
 
 def _serialize_model(model: Any) -> dict[str, Any]:
     """Serialize a Pydantic model to a dict suitable for JSON output.
 
-    Uses model_dump with by_alias=True to emit ``$schema`` correctly.
-    Sorts dict keys alphabetically for determinism.
-    Excludes None values for Criterion pattern-specific fields to match
-    Go's omitempty behavior.
+    Walks model fields in declaration order, recursively serializing
+    nested models via ``_serialize_value``.  This ensures nested
+    Criterion objects have their None pattern-specific fields stripped
+    (matching Go's omitempty behavior) instead of being flattened to
+    plain dicts by a single top-level ``model_dump()`` call.
     """
     from afspec.models import Criterion
 
-    if isinstance(model, Criterion):
-        # For Criterion, exclude None pattern-specific fields
-        data = model.model_dump(by_alias=True)
-        pattern_fields = {"trigger", "condition", "error_condition", "state", "feature"}
-        result: dict[str, Any] = {}
-        for key in model.model_fields:
-            alias = model.model_fields[key].alias or key
-            actual_key = alias if alias else key
-            value = data.get(actual_key, data.get(key))
-            if key in pattern_fields and value is None:
-                continue
-            result[actual_key] = _serialize_value(value)
-        return result
-
-    data = model.model_dump(by_alias=True)
-    return _process_dict(data)
-
-
-def _process_dict(d: dict[str, Any]) -> dict[str, Any]:
-    """Process dict values recursively, sorting dict keys."""
+    _PATTERN_FIELDS = {"trigger", "condition", "error_condition", "state", "feature"}
     result: dict[str, Any] = {}
-    for key, value in d.items():
-        result[key] = _serialize_value(value)
+
+    for field_name, field_info in type(model).model_fields.items():
+        alias = field_info.alias
+        output_key = alias if alias else field_name
+        value = getattr(model, field_name)
+
+        # For Criterion, skip None pattern-specific fields (omitempty)
+        if isinstance(model, Criterion) and field_name in _PATTERN_FIELDS and value is None:
+            continue
+
+        result[output_key] = _serialize_value(value)
+
     return result
 
 

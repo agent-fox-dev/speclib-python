@@ -210,8 +210,8 @@ the quality gate from the start.
   - Verify golden fixture round-trip works.
   - Update documentation if needed.
 
-- [ ] 6. Schema Validation
-  - [ ] 6.1 Create and embed JSON Schema files
+- [x] 6. Schema Validation
+  - [x] 6.1 Create and embed JSON Schema files
     - Create `afspec/schemas/requirements.v1.json`
     - Create `afspec/schemas/test_spec.v1.json`
     - Create `afspec/schemas/tasks.v1.json`
@@ -219,40 +219,40 @@ the quality gate from the start.
     - Add `__init__.py` with schema loading via `importlib.resources`
     - _Requirements: 01-REQ-4.2_
 
-  - [ ] 6.2 Implement validate_schema in validation.py
+  - [x] 6.2 Implement validate_schema in validation.py
     - Load schema bytes via `importlib.resources`
     - Use `jsonschema.validate` for each artifact
     - Collect all errors into `list[ValidationError]`
     - Enforce EARS pattern discriminated union
     - _Requirements: 01-REQ-4.1, 01-REQ-4.3_
 
-  - [ ] 6.3 Implement exceptions in exceptions.py
+  - [x] 6.3 Implement exceptions in exceptions.py
     - `SpecError` base class
     - `LoadError`, `SaveError`, `LifecycleError`, `IntentError`, `BootstrapError`
     - _Requirements: all (error handling infrastructure)_
 
-  - [ ] 6.V Verify task group 6
-    - [ ] Schema validation tests pass: `uv run pytest -v -k 'test_schema or test_ears_mismatch' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-4.1 through 01-REQ-4.3 acceptance criteria met
+  - [x] 6.V Verify task group 6
+    - [x] Schema validation tests pass: `uv run pytest -v -k 'test_schema or test_ears_mismatch' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-4.1 through 01-REQ-4.3 acceptance criteria met
 
-- [ ] 7. Cross-File Integrity Validation
-  - [ ] 7.1 Implement validate_cross_file in validation.py
+- [x] 7. Cross-File Integrity Validation
+  - [x] 7.1 Implement validate_cross_file in validation.py
     - Check artifact completeness (empty spec_id sentinel)
     - Implement all eight cross-file integrity rules
     - Return `list[ValidationError]` with rule identifiers
     - _Requirements: 01-REQ-5.1 through 01-REQ-5.7_
 
-  - [ ] 7.2 Implement validate function in validation.py
+  - [x] 7.2 Implement validate function in validation.py
     - Combine `validate_schema` and `validate_cross_file` results
     - _Requirements: 01-REQ-4.1, 01-REQ-5.1_
 
-  - [ ] 7.V Verify task group 7
-    - [ ] Cross-file tests pass: `uv run pytest -v -k 'test_cross_file or test_dangling or test_glossary or test_spec_id_consistency or test_duplicate_traceability' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-5.1 through 01-REQ-5.7 acceptance criteria met
+  - [x] 7.V Verify task group 7
+    - [x] Cross-file tests pass: `uv run pytest -v -k 'test_cross_file or test_dangling or test_glossary or test_spec_id_consistency or test_duplicate_traceability' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-5.1 through 01-REQ-5.7 acceptance criteria met
 
 - [ ] 8. Lifecycle Management and Bootstrap
   - [ ] 8.1 Implement lifecycle state machine in lifecycle.py
