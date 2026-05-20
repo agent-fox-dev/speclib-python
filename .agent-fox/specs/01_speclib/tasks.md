@@ -205,7 +205,7 @@ the quality gate from the start.
     - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
     - [x] Requirements 01-REQ-3.1 through 01-REQ-3.5 acceptance criteria met
 
-- [ ] 5. Checkpoint - Core I/O Complete
+- [x] 5. Checkpoint - Core I/O Complete
   - Ensure all load/save tests pass, ask the user if questions arise.
   - Verify golden fixture round-trip works.
   - Update documentation if needed.
