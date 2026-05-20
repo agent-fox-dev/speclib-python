@@ -86,49 +86,49 @@ the quality gate from the start.
     - [x] All spec tests FAIL (red) — no implementation yet: `uv run pytest -q 2>&1 | grep FAILED`
     - [x] No linter warnings introduced: `uv run ruff check`
 
-- [ ] 2. Data model types and build system
-  - [ ] 2.1 Create Makefile with check, test, lint targets
+- [x] 2. Data model types and build system
+  - [x] 2.1 Create Makefile with check, test, lint targets
     - `make check` runs `uv run ruff check && uv run mypy afspec/ && uv run pytest -q`
     - `make test` runs `uv run pytest -q`
     - `make lint` runs `uv run ruff check && uv run mypy afspec/`
     - _Requirements: all (build infrastructure)_
 
-  - [ ] 2.2 Implement enums in models.py
+  - [x] 2.2 Implement enums in models.py
     - `Status` enum with five values (str, Enum)
     - `EARSPattern` enum with six values (str, Enum)
     - `SubtaskState` enum with six values (str, Enum) and `valid_transition` function
     - `TaskGroupKind` enum with four values (str, Enum)
     - _Requirements: 01-REQ-1.1, 01-REQ-1.3_
 
-  - [ ] 2.3 Implement PRD models in models.py
+  - [x] 2.3 Implement PRD models in models.py
     - `PRDDocument` and `PRDFrontmatter` Pydantic models
     - Field declarations in spec-format.md §4.1 order
     - _Requirements: 01-REQ-1.1_
 
-  - [ ] 2.4 Implement requirements models in models.py
+  - [x] 2.4 Implement requirements models in models.py
     - `Requirements`, `Requirement`, `UserStory`, `Criterion`, `CorrectnessProperty`, `ExecutionPath`, `PathStep`, `ErrorHandlingEntry`
     - `Criterion` with common + pattern-specific fields (Optional for pattern-specific)
     - `with_return_contract` method on `Criterion`
     - _Requirements: 01-REQ-1.2, 01-REQ-1.4_
 
-  - [ ] 2.5 Implement test_spec and tasks models in models.py
+  - [x] 2.5 Implement test_spec and tasks models in models.py
     - `TestSpec`, `TestCase`, `PropertyTest`, `EdgeCaseTest`, `SmokeTest`, `Coverage`
     - `Tasks`, `TestCommands`, `TaskDependency`, `TaskGroup`, `Subtask`, `VerificationSubtask`, `TraceabilityEntry`
     - `Any` for `input` and `expected` fields
     - `transition_to` method on `Subtask`
     - _Requirements: 01-REQ-1.4_
 
-  - [ ] 2.6 Implement factory functions in constructors.py
+  - [x] 2.6 Implement factory functions in constructors.py
     - `create_spec(spec_id, spec_name)` → `Spec`
     - Six EARS criterion builders: `ubiquitous_criterion`, `event_driven_criterion`, `complex_event_criterion`, `state_driven_criterion`, `unwanted_criterion`, `optional_criterion`
     - _Requirements: 01-REQ-1.5, 01-REQ-1.6, 01-REQ-11.7_
 
-  - [ ] 2.V Verify task group 2
-    - [ ] Type tests pass: `uv run pytest -v -k 'test_spec_model or test_criterion or test_subtask_state or test_sub_types' tests/`
-    - [ ] Constructor tests pass: `uv run pytest -v -k 'test_create or test_with_return' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-1.1 through 01-REQ-1.7 acceptance criteria met
+  - [x] 2.V Verify task group 2
+    - [x] Type tests pass: `uv run pytest -v -k 'test_spec_model or test_criterion or test_subtask_state or test_sub_types' tests/`
+    - [x] Constructor tests pass: `uv run pytest -v -k 'test_create or test_with_return' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-1.1 through 01-REQ-1.7 acceptance criteria met
 
 - [ ] 3. File I/O — Load
   - [ ] 3.1 Implement PRD parser in io.py
