@@ -326,25 +326,25 @@ the quality gate from the start.
     - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
     - [x] Requirements 01-REQ-8.1 through 01-REQ-8.6 acceptance criteria met
 
-- [ ] 11. Spec Root Discovery
-  - [ ] 11.1 Implement discover_specs in discovery.py
+- [x] 11. Spec Root Discovery
+  - [x] 11.1 Implement discover_specs in discovery.py
     - Scan root directory for matching pattern
     - Skip `archive/` subdirectory
     - Load PRD frontmatter only → `SpecMeta`
     - _Requirements: 01-REQ-9.1, 01-REQ-9.2_
 
-  - [ ] 11.2 Implement build_dependency_graph in discovery.py
+  - [x] 11.2 Implement build_dependency_graph in discovery.py
     - Parse `tasks.json` dependencies from each spec folder
     - Validate all references exist
     - Build directed graph, check for cycles
     - `DependencyGraph` class with `dependencies`, `dependents`, `topological_sort` methods
     - _Requirements: 01-REQ-9.3, 01-REQ-9.4, 01-REQ-9.5_
 
-  - [ ] 11.V Verify task group 11
-    - [ ] Discovery tests pass: `uv run pytest -v -k 'test_discover or test_dependency' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-9.1 through 01-REQ-9.5 acceptance criteria met
+  - [x] 11.V Verify task group 11
+    - [x] Discovery tests pass: `uv run pytest -v -k 'test_discover or test_dependency' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-9.1 through 01-REQ-9.5 acceptance criteria met
 
 - [ ] 12. Programmatic Construction API
   - [ ] 12.1 Implement collection mutation functions in mutate.py
