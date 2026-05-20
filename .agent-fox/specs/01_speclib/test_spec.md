@@ -436,17 +436,18 @@ assert any("99-REQ-99.1" in e.message for e in errs)
 **Description:** Cross-file validation catches requirements without test cases.
 
 **Preconditions:**
-- A spec with a requirement "05-REQ-1.1" but no test case for it.
+- A spec with a requirement "05-REQ-1.1" that has at least one acceptance criterion (e.g., `Criterion(ears_pattern="when", system="sys", trigger="event", action="verify result")`), but no test case in `test_spec.json` covering that criterion.
 
 **Input:**
 - `afspec.validate_cross_file(spec)`
 
 **Expected:**
-- Error mentions "05-REQ-1.1" has no test case.
+- Error mentions "05-REQ-1.1" has an acceptance criterion with no corresponding test case.
 
 **Assertion pseudocode:**
 ```
-spec = make_spec_with_untested_requirement("05-REQ-1.1")
+criterion = Criterion(ears_pattern="when", system="sys", trigger="event", action="verify result")
+spec = make_spec_with_untested_requirement("05-REQ-1.1", acceptance_criteria=[criterion])
 errs = afspec.validate_cross_file(spec)
 assert any(e.rule == "cross-file-2" and "05-REQ-1.1" in e.message for e in errs)
 ```
@@ -1672,12 +1673,13 @@ assert len(errs) > 0
 - `afspec.load_spec(dir)`
 
 **Expected:**
-- Raises LoadError mentioning the missing files.
+- Raises LoadError whose message identifies both missing files.
 
 **Assertion pseudocode:**
 ```
-with pytest.raises(LoadError, match="test_spec.json"):
+with pytest.raises(LoadError, match="test_spec.json") as exc_info:
     afspec.load_spec(dir_missing_files)
+assert "tasks.json" in str(exc_info.value)
 ```
 
 ### TS-01-E3: load_spec with malformed JSON
@@ -1802,21 +1804,23 @@ assert json.loads(content)  # valid JSON
 **Description:** Schema validation reports unknown fields.
 
 **Preconditions:**
-- A requirements.json with an extra field "unknown_field": "value".
+- A valid spec whose requirements artifact is serialized to a dict, then mutated to include an unknown field before JSON Schema validation.
 
 **Input:**
-- `afspec.validate_schema(spec)`
+- Validate the mutated dict against the requirements JSON Schema.
 
 **Expected:**
 - Error mentioning the unknown field.
 
 **Assertion pseudocode:**
 ```
-# simulated via raw JSON manipulation
-spec_dict = spec.model_dump()
-spec_dict["requirements"]["unknown_field"] = "value"
-errs = afspec.validate_schema_from_dict(spec_dict)
-assert any("unknown" in e.message or "additional" in e.message for e in errs)
+import importlib.resources, json, jsonschema
+schema = json.loads(importlib.resources.read_text("afspec.schemas", "requirements.schema.json"))
+req_dict = spec.requirements.model_dump()
+req_dict["unknown_field"] = "value"
+validator = jsonschema.Draft202012Validator(schema)
+errors = list(validator.iter_errors(req_dict))
+assert any("unknown_field" in e.message or "additional" in e.message for e in errors)
 ```
 
 ### TS-01-E9: Invalid ears_pattern value
