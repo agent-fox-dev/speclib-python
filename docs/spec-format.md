@@ -804,8 +804,8 @@ enforced by the library — free-form edits to the status field are rejected.
 When a new spec replaces an existing one:
 
 1. The new spec sets `supersedes: ["03"]` in its frontmatter.
-2. The library adds a deprecation banner to all files in the superseded
-   spec.
+2. The library adds a deprecation banner to the top of the superseded
+   spec's `prd.md`.
 3. The superseded spec's status transitions to `superseded`.
 4. The superseded spec folder is moved to `<spec_root>/specs/archive/`.
 
@@ -849,6 +849,8 @@ succeeds. Rules:
    `test_spec.json`.
 6. Glossary cross-check (see below).
 7. `spec_id` and `spec_name` must be consistent across all four files.
+8. No two entries in the `tasks.json` traceability array may share the
+   same `(requirement_id, test_spec_id)` pair.
 
 **Glossary cross-check (rule 6) details:**
 
