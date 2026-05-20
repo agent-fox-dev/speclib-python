@@ -162,34 +162,34 @@ the quality gate from the start.
     - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
     - [x] Requirements 01-REQ-2.1, 01-REQ-2.2, 01-REQ-2.3, 01-REQ-10.1, 01-REQ-10.2 acceptance criteria met
 
-- [ ] 4. File I/O — Save
-  - [ ] 4.1 Implement deterministic JSON serialization
+- [x] 4. File I/O — Save
+  - [x] 4.1 Implement deterministic JSON serialization
     - Custom serializer: 2-space indent, trailing newline
     - Model fields in declaration order (Pydantic default)
     - Dict keys sorted alphabetically
     - Optional pattern-specific criterion fields excluded when None
     - _Requirements: 01-REQ-3.2_
 
-  - [ ] 4.2 Implement PRD frontmatter serialization in io.py
+  - [x] 4.2 Implement PRD frontmatter serialization in io.py
     - Render YAML frontmatter with `---` delimiters
     - Field order matches model declaration order
     - Concatenate with body
     - _Requirements: 01-REQ-3.1_
 
-  - [ ] 4.3 Implement atomic file writes in io.py
+  - [x] 4.3 Implement atomic file writes in io.py
     - Write to temp file (same directory, random suffix) via `tempfile.NamedTemporaryFile`
     - `os.rename` to final path
     - Cleanup temp files on any failure
     - _Requirements: 01-REQ-3.3_
 
-  - [ ] 4.4 Implement compute_coverage in coverage.py
+  - [x] 4.4 Implement compute_coverage in coverage.py
     - Scan test cases → requirements_covered
     - Scan property tests → properties_covered
     - Scan smoke tests → paths_covered
     - Diff against all IDs → gaps
     - _Requirements: 01-REQ-3.5_
 
-  - [ ] 4.5 Implement save orchestrator in io.py
+  - [x] 4.5 Implement save orchestrator in io.py
     - Set `updated_at` to `datetime.now(UTC)` formatted as ISO 8601
     - Call `compute_coverage` and update `spec.test_spec.coverage`
     - Serialize all four files
@@ -198,12 +198,12 @@ the quality gate from the start.
     - Mutation guard: check immutable fields and intent hash for active specs
     - _Requirements: 01-REQ-3.1, 01-REQ-3.4_
 
-  - [ ] 4.V Verify task group 4
-    - [ ] Save tests pass: `uv run pytest -v -k 'test_save or test_deterministic or test_atomic or test_updated_at or test_coverage' tests/`
-    - [ ] Round-trip property test passes: `uv run pytest -v -k 'test_property_round_trip' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-3.1 through 01-REQ-3.5 acceptance criteria met
+  - [x] 4.V Verify task group 4
+    - [x] Save tests pass: `uv run pytest -v -k 'test_save or test_deterministic or test_atomic or test_updated_at or test_coverage' tests/`
+    - [x] Round-trip property test passes: `uv run pytest -v -k 'test_property_round_trip' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-3.1 through 01-REQ-3.5 acceptance criteria met
 
 - [ ] 5. Checkpoint - Core I/O Complete
   - Ensure all load/save tests pass, ask the user if questions arise.
