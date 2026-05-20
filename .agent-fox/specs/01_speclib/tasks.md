@@ -31,8 +31,8 @@ the quality gate from the start.
 
 ## Tasks
 
-- [ ] 1. Write failing spec tests
-  - [ ] 1.1 Create project structure and golden fixtures
+- [x] 1. Write failing spec tests
+  - [x] 1.1 Create project structure and golden fixtures
     - Create `pyproject.toml` with dependencies (pydantic, PyYAML, jsonschema)
     - Create `afspec/__init__.py` with empty exports
     - Create `afspec/models.py` with stub classes
@@ -49,14 +49,14 @@ the quality gate from the start.
     - Create `tests/golden/draft_spec/` with a spec in draft state
     - _Test Spec: TS-01-1 through TS-01-53, TS-01-E1 through TS-01-E34, TS-01-P1 through TS-01-P12, TS-01-SMOKE-1 through TS-01-SMOKE-9_
 
-  - [ ] 1.2 Translate unit tests for data model types
+  - [x] 1.2 Translate unit tests for data model types
     - TS-01-1: Spec model has all four artifact fields
     - TS-01-2: Criterion supports six EARS patterns
     - TS-01-3: SubtaskState valid_transition for all 30 pairs
     - TS-01-4: All sub-types are importable
     - _Test Spec: TS-01-1, TS-01-2, TS-01-3, TS-01-4_
 
-  - [ ] 1.3 Translate unit and integration tests for file I/O
+  - [x] 1.3 Translate unit and integration tests for file I/O
     - TS-01-5: load_spec reads all four artifacts
     - TS-01-6: PRD frontmatter and body parsed correctly
     - TS-01-7: JSON artifacts deserialized correctly
@@ -67,24 +67,24 @@ the quality gate from the start.
     - TS-01-12: Coverage auto-computed on save
     - _Test Spec: TS-01-5 through TS-01-12_
 
-  - [ ] 1.4 Translate tests for validation, lifecycle, bootstrap, rendering, discovery, intent hash
+  - [x] 1.4 Translate tests for validation, lifecycle, bootstrap, rendering, discovery, intent hash
     - TS-01-13 through TS-01-41, TS-01-52, TS-01-53 (remaining unit/integration tests)
     - _Test Spec: TS-01-13 through TS-01-41, TS-01-52, TS-01-53_
 
-  - [ ] 1.5 Translate edge case tests
+  - [x] 1.5 Translate edge case tests
     - TS-01-E1 through TS-01-E27 (data model, I/O, validation, lifecycle, discovery, mutation)
     - TS-01-E28 through TS-01-E34 (supersede, archive, and traceability edge cases)
     - _Test Spec: TS-01-E1 through TS-01-E34_
 
-  - [ ] 1.6 Translate property tests and smoke tests
+  - [x] 1.6 Translate property tests and smoke tests
     - TS-01-P1 through TS-01-P12
     - TS-01-SMOKE-1 through TS-01-SMOKE-9
     - _Test Spec: TS-01-P1 through TS-01-P12, TS-01-SMOKE-1 through TS-01-SMOKE-9_
 
-  - [ ] 1.V Verify task group 1
-    - [ ] All spec tests exist and are syntactically valid: `uv run python -m py_compile tests/test_models.py tests/test_io.py tests/test_validation.py tests/test_lifecycle.py tests/test_bootstrap.py tests/test_render.py tests/test_discovery.py tests/test_mutate.py`
-    - [ ] All spec tests FAIL (red) — no implementation yet: `uv run pytest -q 2>&1 | grep FAILED`
-    - [ ] No linter warnings introduced: `uv run ruff check`
+  - [x] 1.V Verify task group 1
+    - [x] All spec tests exist and are syntactically valid: `uv run python -m py_compile tests/test_models.py tests/test_io.py tests/test_validation.py tests/test_lifecycle.py tests/test_bootstrap.py tests/test_render.py tests/test_discovery.py tests/test_mutate.py`
+    - [x] All spec tests FAIL (red) — no implementation yet: `uv run pytest -q 2>&1 | grep FAILED`
+    - [x] No linter warnings introduced: `uv run ruff check`
 
 - [ ] 2. Data model types and build system
   - [ ] 2.1 Create Makefile with check, test, lint targets
