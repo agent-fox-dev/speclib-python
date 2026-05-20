@@ -370,9 +370,9 @@ the quality gate from the start.
     - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
     - [x] Requirements 01-REQ-11.1 through 01-REQ-11.7 acceptance criteria met
 
-- [ ] 13. Wiring verification
+- [x] 13. Wiring verification
 
-  - [ ] 13.1 Trace every execution path from design.md end-to-end
+  - [x] 13.1 Trace every execution path from design.md end-to-end
     - For each path, verify the entry point actually calls the next function
       in the chain (read the calling code, do not assume)
     - Confirm no function in the chain is a stub (`return []`, `return None`,
@@ -381,38 +381,40 @@ the quality gate from the start.
       satisfy this check
     - _Requirements: all_
 
-  - [ ] 13.2 Verify return values propagate correctly
+  - [x] 13.2 Verify return values propagate correctly
     - For every function in this spec that returns data consumed by a caller,
       confirm the caller receives and uses the return value
     - Grep for callers of each such function; confirm none discards the return
     - _Requirements: all_
 
-  - [ ] 13.3 Run the integration smoke tests
+  - [x] 13.3 Run the integration smoke tests
     - All `TS-01-SMOKE-*` tests pass using real components (no stub bypass)
     - _Test Spec: TS-01-SMOKE-1 through TS-01-SMOKE-9_
 
-  - [ ] 13.4 Stub / dead-code audit
+  - [x] 13.4 Stub / dead-code audit
     - Search all files touched by this spec for: `return []`, `return None`
       on non-Optional returns, `pass` in non-abstract methods, `# TODO`,
       `# stub`, `NotImplementedError`
     - Each hit must be either: (a) justified with a comment explaining why it
       is intentional, or (b) replaced with a real implementation
     - Document any intentional stubs here with rationale
+    - Audit results: all `return None` hits are on Optional returns (bootstrap.py finalize, mutate.py get/extract helpers, discovery.py dfs cycle detection). All `pass` hits are in exception handlers silently ignoring cleanup failures (io.py atomic writes, lifecycle.py archive path check). No `# TODO`, `# stub`, or `NotImplementedError` found.
 
-  - [ ] 13.5 Cross-spec entry point verification
+  - [x] 13.5 Cross-spec entry point verification
     - For each execution path whose entry point is owned by another spec,
       grep the codebase to confirm the entry point is actually called from
       production code — not just from tests
     - If the upstream caller does not exist, either implement it within this
       spec or file an issue and remove the path from design.md
     - _Requirements: all_
+    - Result: afspec is a standalone library with no cross-spec dependencies. All execution path entry points are public API functions exported via __init__.py, designed for external consumer code. Internal wiring between modules (lifecycle→io, io→coverage, render→ears, validation→schemas, bootstrap→validation) confirmed live.
 
-  - [ ] 13.V Verify wiring group
-    - [ ] All smoke tests pass
-    - [ ] No unjustified stubs remain in touched files
-    - [ ] All execution paths from design.md are live (traceable in code)
-    - [ ] All cross-spec entry points are called from production code
-    - [ ] All existing tests still pass: `uv run pytest -q`
+  - [x] 13.V Verify wiring group
+    - [x] All smoke tests pass
+    - [x] No unjustified stubs remain in touched files
+    - [x] All execution paths from design.md are live (traceable in code)
+    - [x] All cross-spec entry points are called from production code
+    - [x] All existing tests still pass: `uv run pytest -q`
 
 ## Traceability
 
