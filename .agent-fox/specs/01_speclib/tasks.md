@@ -130,37 +130,37 @@ the quality gate from the start.
     - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
     - [x] Requirements 01-REQ-1.1 through 01-REQ-1.7 acceptance criteria met
 
-- [ ] 3. File I/O — Load
-  - [ ] 3.1 Implement PRD parser in io.py
+- [x] 3. File I/O — Load
+  - [x] 3.1 Implement PRD parser in io.py
     - Parse YAML frontmatter (between `---` delimiters) using PyYAML
     - Extract markdown body (everything after closing `---`)
     - Return `PRDDocument`
     - _Requirements: 01-REQ-2.2_
 
-  - [ ] 3.2 Implement JSON artifact loader in io.py
+  - [x] 3.2 Implement JSON artifact loader in io.py
     - Read and deserialize `requirements.json`, `test_spec.json`, `tasks.json`
     - Use `json.loads` then Pydantic `model_validate`
     - _Requirements: 01-REQ-2.3_
 
-  - [ ] 3.3 Implement load_spec orchestrator in io.py
+  - [x] 3.3 Implement load_spec orchestrator in io.py
     - Check all four files exist, raise LoadError listing missing ones
     - Call PRD parser and JSON loader
     - Assemble and return `Spec`
     - Capture `_ImmutableSnapshot` from PRD frontmatter
     - _Requirements: 01-REQ-2.1_
 
-  - [ ] 3.4 Implement compute_intent_hash in intent.py
+  - [x] 3.4 Implement compute_intent_hash in intent.py
     - Extract text between `## Intent` and next `##` (or EOF)
     - Normalize: LF line endings, collapse blank lines, lower-case, trim
     - Compute SHA-256, return lowercase hex
     - Handle missing/empty intent section edge cases
     - _Requirements: 01-REQ-10.1, 01-REQ-10.2_
 
-  - [ ] 3.V Verify task group 3
-    - [ ] Load tests pass: `uv run pytest -v -k 'test_load or test_prd or test_json or test_intent' tests/`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
-    - [ ] Requirements 01-REQ-2.1, 01-REQ-2.2, 01-REQ-2.3, 01-REQ-10.1, 01-REQ-10.2 acceptance criteria met
+  - [x] 3.V Verify task group 3
+    - [x] Load tests pass: `uv run pytest -v -k 'test_load or test_prd or test_json or test_intent' tests/`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check && uv run mypy afspec/`
+    - [x] Requirements 01-REQ-2.1, 01-REQ-2.2, 01-REQ-2.3, 01-REQ-10.1, 01-REQ-10.2 acceptance criteria met
 
 - [ ] 4. File I/O — Save
   - [ ] 4.1 Implement deterministic JSON serialization
