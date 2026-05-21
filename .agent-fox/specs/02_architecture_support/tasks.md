@@ -26,14 +26,14 @@ model and I/O are in place before rendering and bootstrap depend on them.
 
 ## Tasks
 
-- [ ] 1. Write failing spec tests
-  - [ ] 1.1 Create test file structure
+- [x] 1. Write failing spec tests
+  - [x] 1.1 Create test file structure
     - Create `tests/test_architecture.py` with imports from `afspec`
     - Set up test fixtures for valid spec creation (reuse existing conftest patterns)
     - Set up temp directory fixtures for I/O tests
     - _Test Spec: TS-02-1 through TS-02-15, TS-02-E1 through TS-02-E5_
 
-  - [ ] 1.2 Translate model and I/O acceptance-criterion tests
+  - [x] 1.2 Translate model and I/O acceptance-criterion tests
     - TS-02-1: Spec model architecture field
     - TS-02-2: load_spec with architecture.md present
     - TS-02-3: load_spec without architecture.md
@@ -43,7 +43,7 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - TS-02-7: _save_internal without architecture
     - _Test Spec: TS-02-1 through TS-02-7_
 
-  - [ ] 1.3 Translate validation and rendering tests
+  - [x] 1.3 Translate validation and rendering tests
     - TS-02-8: validate_schema ignores architecture
     - TS-02-9: validate_cross_file ignores architecture
     - TS-02-10: load_spec requires only four files
@@ -51,13 +51,13 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - TS-02-12: render_combined without architecture
     - _Test Spec: TS-02-8 through TS-02-12_
 
-  - [ ] 1.4 Translate bootstrap tests
+  - [x] 1.4 Translate bootstrap tests
     - TS-02-13: set_architecture stores content
     - TS-02-14: finalize with architecture
     - TS-02-15: finalize without architecture
     - _Test Spec: TS-02-13 through TS-02-15_
 
-  - [ ] 1.5 Translate edge case and property tests
+  - [x] 1.5 Translate edge case and property tests
     - TS-02-E1: default construction
     - TS-02-E2: empty architecture.md
     - TS-02-E3: save with empty string architecture
@@ -69,16 +69,16 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - TS-02-P4: combined render ordering
     - _Test Spec: TS-02-E1 through TS-02-E5, TS-02-P1 through TS-02-P4_
 
-  - [ ] 1.6 Translate integration smoke tests
+  - [x] 1.6 Translate integration smoke tests
     - TS-02-SMOKE-1: load-save round-trip with architecture
     - TS-02-SMOKE-2: combined rendering end-to-end
     - TS-02-SMOKE-3: bootstrap finalize with architecture
     - _Test Spec: TS-02-SMOKE-1 through TS-02-SMOKE-3_
 
-  - [ ] 1.V Verify task group 1
-    - [ ] All spec tests exist and are syntactically valid
-    - [ ] All spec tests FAIL (red) — no implementation yet
-    - [ ] No linter warnings introduced: `uv run ruff check`
+  - [x] 1.V Verify task group 1
+    - [x] All spec tests exist and are syntactically valid
+    - [x] All spec tests FAIL (red) — no implementation yet
+    - [x] No linter warnings introduced: `uv run ruff check`
 
 - [ ] 2. Implement model and I/O changes
   - [ ] 2.1 Add architecture field to Spec model
