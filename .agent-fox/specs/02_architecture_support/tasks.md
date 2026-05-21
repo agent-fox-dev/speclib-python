@@ -132,7 +132,7 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - [x] No linter warnings introduced: `uv run ruff check`
     - [x] Requirements 02-REQ-5.1, 02-REQ-5.2, 02-REQ-5.E1, 02-REQ-6.1, 02-REQ-6.2, 02-REQ-6.3 acceptance criteria met
 
-- [ ] 4. Checkpoint - All Tests Green
+- [x] 4. Checkpoint - All Tests Green
   - Ensure all tests pass including property tests and smoke tests.
   - Run `make check` for full quality gate.
 
