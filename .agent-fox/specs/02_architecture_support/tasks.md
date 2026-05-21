@@ -136,9 +136,9 @@ model and I/O are in place before rendering and bootstrap depend on them.
   - Ensure all tests pass including property tests and smoke tests.
   - Run `make check` for full quality gate.
 
-- [ ] 5. Wiring verification
+- [x] 5. Wiring verification
 
-  - [ ] 5.1 Trace every execution path from design.md end-to-end
+  - [x] 5.1 Trace every execution path from design.md end-to-end
     - Path 1: load_spec reads architecture.md → Spec.architecture populated
     - Path 2: save writes architecture.md from Spec.architecture
     - Path 3: render_combined includes architecture between PRD and requirements
@@ -147,36 +147,36 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - Confirm no stub remains
     - _Requirements: all_
 
-  - [ ] 5.2 Verify return values propagate correctly
+  - [x] 5.2 Verify return values propagate correctly
     - load_spec returns Spec with architecture field populated
     - render_combined uses spec.architecture in output
     - finalize passes _architecture to Spec constructor
     - _Requirements: all_
 
-  - [ ] 5.3 Run the integration smoke tests
+  - [x] 5.3 Run the integration smoke tests
     - All TS-02-SMOKE-* tests pass using real components
     - `uv run pytest -q tests/test_architecture.py -k smoke`
     - _Test Spec: TS-02-SMOKE-1 through TS-02-SMOKE-3_
 
-  - [ ] 5.4 Stub / dead-code audit
+  - [x] 5.4 Stub / dead-code audit
     - Search all files touched by this spec for: `return []`, `return None`
       on non-Optional returns, `pass` in non-abstract methods, `# TODO`,
       `# stub`, `NotImplementedError`
     - Each hit must be justified or replaced
     - _Requirements: all_
 
-  - [ ] 5.5 Cross-spec entry point verification
+  - [x] 5.5 Cross-spec entry point verification
     - All entry points (load_spec, save, _save_internal, render_combined,
       BootstrapSpec methods) are public API or used by lifecycle.py
     - Verify callers exist in production code
     - _Requirements: all_
 
-  - [ ] 5.V Verify wiring group
-    - [ ] All smoke tests pass
-    - [ ] No unjustified stubs remain in touched files
-    - [ ] All execution paths from design.md are live (traceable in code)
-    - [ ] All cross-spec entry points are called from production code
-    - [ ] All existing tests still pass: `uv run pytest -q`
+  - [x] 5.V Verify wiring group
+    - [x] All smoke tests pass
+    - [x] No unjustified stubs remain in touched files
+    - [x] All execution paths from design.md are live (traceable in code)
+    - [x] All cross-spec entry points are called from production code
+    - [x] All existing tests still pass: `uv run pytest -q`
 
 ## Traceability
 
