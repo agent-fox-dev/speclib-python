@@ -408,6 +408,7 @@ class Spec(BaseModel):
     requirements: Requirements = Field(default_factory=Requirements)
     test_spec: TestSpec = Field(default_factory=TestSpec)
     tasks: Tasks = Field(default_factory=Tasks)
+    architecture: str | None = None
     _loaded: Optional[_ImmutableSnapshot] = PrivateAttr(default=None)
 
 

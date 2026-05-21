@@ -80,13 +80,13 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - [x] All spec tests FAIL (red) — no implementation yet
     - [x] No linter warnings introduced: `uv run ruff check`
 
-- [ ] 2. Implement model and I/O changes
-  - [ ] 2.1 Add architecture field to Spec model
+- [x] 2. Implement model and I/O changes
+  - [x] 2.1 Add architecture field to Spec model
     - Add `architecture: str | None = None` field to `Spec` class in `models.py`
     - Field goes after `tasks` and before the `_loaded` private attribute
     - _Requirements: 02-REQ-1.1, 02-REQ-1.E1_
 
-  - [ ] 2.2 Update load_spec to read architecture.md
+  - [x] 2.2 Update load_spec to read architecture.md
     - In `io.py: load_spec`, after loading four required artifacts:
     - Check if `architecture.md` exists in the directory
     - If present, read its content as UTF-8 text
@@ -94,21 +94,21 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - If absent, leave architecture as None (default)
     - _Requirements: 02-REQ-2.1, 02-REQ-2.2, 02-REQ-2.E1_
 
-  - [ ] 2.3 Update save to write architecture.md
+  - [x] 2.3 Update save to write architecture.md
     - In `io.py: save`, after writing the four required artifacts:
     - If `spec.architecture is not None`, call `_atomic_write(dir_path / "architecture.md", spec.architecture)`
     - If `spec.architecture is None`, do nothing
     - _Requirements: 02-REQ-3.1, 02-REQ-3.2, 02-REQ-3.E1_
 
-  - [ ] 2.4 Update _save_internal to write architecture.md
+  - [x] 2.4 Update _save_internal to write architecture.md
     - Same logic as save: write architecture.md when non-None, skip when None
     - _Requirements: 02-REQ-3.3, 02-REQ-3.4_
 
-  - [ ] 2.V Verify task group 2
-    - [ ] Spec tests for this group pass: `uv run pytest -q tests/test_architecture.py -k "test_model or test_load or test_save"`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check`
-    - [ ] Requirements 02-REQ-1.1, 02-REQ-1.E1, 02-REQ-2.1, 02-REQ-2.2, 02-REQ-2.E1, 02-REQ-3.1, 02-REQ-3.2, 02-REQ-3.3, 02-REQ-3.4, 02-REQ-3.E1 acceptance criteria met
+  - [x] 2.V Verify task group 2
+    - [x] Spec tests for this group pass: `uv run pytest -q tests/test_architecture.py -k "test_model or test_load or test_save"`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check`
+    - [x] Requirements 02-REQ-1.1, 02-REQ-1.E1, 02-REQ-2.1, 02-REQ-2.2, 02-REQ-2.E1, 02-REQ-3.1, 02-REQ-3.2, 02-REQ-3.3, 02-REQ-3.4, 02-REQ-3.E1 acceptance criteria met
 
 - [ ] 3. Implement rendering and bootstrap changes
   - [ ] 3.1 Update render_combined to include architecture

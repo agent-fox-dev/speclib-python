@@ -127,12 +127,17 @@ def load_spec(dir: Union[str, Path]) -> Spec:
     test_spec = _load_json_artifact(dir_path / "test_spec.json", TestSpec)
     tasks = _load_json_artifact(dir_path / "tasks.json", Tasks)
 
+    # Load optional architecture.md
+    arch_path = dir_path / "architecture.md"
+    architecture = arch_path.read_text(encoding="utf-8") if arch_path.is_file() else None
+
     # Assemble Spec
     spec = Spec(
         prd=prd,
         requirements=requirements,
         test_spec=test_spec,
         tasks=tasks,
+        architecture=architecture,
     )
 
     # Capture immutable snapshot for mutation guard
@@ -364,6 +369,8 @@ def save(spec: Spec, dir: Union[str, Path]) -> None:
         _atomic_write(dir_path / "requirements.json", req_content)
         _atomic_write(dir_path / "test_spec.json", ts_content)
         _atomic_write(dir_path / "tasks.json", tasks_content)
+        if spec.architecture is not None:
+            _atomic_write(dir_path / "architecture.md", spec.architecture)
     except Exception as exc:
         # Clean up any remaining temp files
         for tmp in dir_path.glob("*.tmp*"):
@@ -462,6 +469,8 @@ def _save_internal(spec: Spec, dir: Union[str, Path]) -> None:
         _atomic_write(dir_path / "requirements.json", req_content)
         _atomic_write(dir_path / "test_spec.json", ts_content)
         _atomic_write(dir_path / "tasks.json", tasks_content)
+        if spec.architecture is not None:
+            _atomic_write(dir_path / "architecture.md", spec.architecture)
     except Exception as exc:
         # Clean up any remaining temp files
         for tmp in dir_path.glob("*.tmp*"):
