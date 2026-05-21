@@ -127,9 +127,10 @@ def load_spec(dir: Union[str, Path]) -> Spec:
     test_spec = _load_json_artifact(dir_path / "test_spec.json", TestSpec)
     tasks = _load_json_artifact(dir_path / "tasks.json", Tasks)
 
-    # Load optional architecture.md
+    # Load optional architecture.md (read as bytes to avoid universal-newline
+    # translation that would convert \r to \n, breaking round-trip fidelity)
     arch_path = dir_path / "architecture.md"
-    architecture = arch_path.read_text(encoding="utf-8") if arch_path.is_file() else None
+    architecture = arch_path.read_bytes().decode("utf-8") if arch_path.is_file() else None
 
     # Assemble Spec
     spec = Spec(

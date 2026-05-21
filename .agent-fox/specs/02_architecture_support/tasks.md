@@ -110,27 +110,27 @@ model and I/O are in place before rendering and bootstrap depend on them.
     - [x] No linter warnings introduced: `uv run ruff check`
     - [x] Requirements 02-REQ-1.1, 02-REQ-1.E1, 02-REQ-2.1, 02-REQ-2.2, 02-REQ-2.E1, 02-REQ-3.1, 02-REQ-3.2, 02-REQ-3.3, 02-REQ-3.4, 02-REQ-3.E1 acceptance criteria met
 
-- [ ] 3. Implement rendering and bootstrap changes
-  - [ ] 3.1 Update render_combined to include architecture
+- [x] 3. Implement rendering and bootstrap changes
+  - [x] 3.1 Update render_combined to include architecture
     - In `render.py: render_combined`, after appending PRD body:
     - If `spec.architecture is not None`, append architecture content (rstripped) between separator rules
     - If None, keep existing behavior unchanged
     - _Requirements: 02-REQ-5.1, 02-REQ-5.2, 02-REQ-5.E1_
 
-  - [ ] 3.2 Add set_architecture to BootstrapSpec
+  - [x] 3.2 Add set_architecture to BootstrapSpec
     - In `bootstrap.py`, add `_architecture: Optional[str] = None` instance variable
     - Add `set_architecture(self, content: str) -> None` method
     - _Requirements: 02-REQ-6.1_
 
-  - [ ] 3.3 Update BootstrapSpec.finalize to pass architecture
+  - [x] 3.3 Update BootstrapSpec.finalize to pass architecture
     - In `finalize`, pass `architecture=self._architecture` when constructing Spec
     - _Requirements: 02-REQ-6.2, 02-REQ-6.3_
 
-  - [ ] 3.V Verify task group 3
-    - [ ] Spec tests for this group pass: `uv run pytest -q tests/test_architecture.py -k "test_render or test_bootstrap"`
-    - [ ] All existing tests still pass: `uv run pytest -q`
-    - [ ] No linter warnings introduced: `uv run ruff check`
-    - [ ] Requirements 02-REQ-5.1, 02-REQ-5.2, 02-REQ-5.E1, 02-REQ-6.1, 02-REQ-6.2, 02-REQ-6.3 acceptance criteria met
+  - [x] 3.V Verify task group 3
+    - [x] Spec tests for this group pass: `uv run pytest -q tests/test_architecture.py -k "test_render or test_bootstrap"`
+    - [x] All existing tests still pass: `uv run pytest -q`
+    - [x] No linter warnings introduced: `uv run ruff check`
+    - [x] Requirements 02-REQ-5.1, 02-REQ-5.2, 02-REQ-5.E1, 02-REQ-6.1, 02-REQ-6.2, 02-REQ-6.3 acceptance criteria met
 
 - [ ] 4. Checkpoint - All Tests Green
   - Ensure all tests pass including property tests and smoke tests.

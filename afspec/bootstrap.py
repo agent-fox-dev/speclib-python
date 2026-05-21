@@ -26,6 +26,7 @@ class BootstrapSpec:
         self._requirements: Optional[Requirements] = None
         self._test_spec: Optional[TestSpec] = None
         self._tasks: Optional[Tasks] = None
+        self._architecture: Optional[str] = None
 
     def set_prd(self, prd: PRDDocument) -> None:
         """Set the PRD artifact."""
@@ -42,6 +43,10 @@ class BootstrapSpec:
     def set_tasks(self, t: Tasks) -> None:
         """Set the tasks artifact."""
         self._tasks = t
+
+    def set_architecture(self, content: str) -> None:
+        """Set the optional architecture content."""
+        self._architecture = content
 
     def finalize(self) -> tuple[Spec | None, list[ValidationError]]:
         """Validate and return a Spec, or None with errors.
@@ -88,6 +93,7 @@ class BootstrapSpec:
             requirements=self._requirements,
             test_spec=self._test_spec,
             tasks=self._tasks,
+            architecture=self._architecture,
         )
 
         # Run full validation

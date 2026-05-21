@@ -430,6 +430,13 @@ def render_combined(spec: Spec) -> str:
     parts.append("---")
     parts.append("")
 
+    # Architecture (optional)
+    if spec.architecture is not None:
+        parts.append(spec.architecture.rstrip())
+        parts.append("")
+        parts.append("---")
+        parts.append("")
+
     # Rendered requirements
     parts.append(render_requirements(spec.requirements).rstrip())
 
