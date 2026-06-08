@@ -441,9 +441,15 @@ def test_property_render_ordering(arch_content: str) -> None:
     """TS-02-P4: Combined render ordering (Property 4)."""
     # Filter whitespace-only strings whose rstrip() is empty,
     # since str.find("") always returns 0 (per skeptic review).
-    assume(arch_content.rstrip())
+    stripped = arch_content.rstrip()
+    assume(stripped)
 
     spec = load_spec(VALID_SPEC_DIR)
+
+    # Filter out content that is a substring of the PRD body, since
+    # find() would match the PRD body position instead of architecture.
+    assume(stripped not in spec.prd.body)
+
     spec_with = Spec(
         prd=spec.prd,
         requirements=spec.requirements,
@@ -452,7 +458,7 @@ def test_property_render_ordering(arch_content: str) -> None:
         architecture=arch_content,
     )
     output = render_combined(spec_with)
-    arch_pos = output.find(arch_content.rstrip())
+    arch_pos = output.find(stripped)
     req_pos = output.find("# Requirements:")
     assert arch_pos > 0
     assert arch_pos < req_pos

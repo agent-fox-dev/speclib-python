@@ -1,6 +1,6 @@
 # Spec Format Specification
 
-Version 1.1 — Draft
+Version 1.2 — Draft
 
 ## 1. Scope
 
@@ -941,57 +941,19 @@ This runs both layers without requiring a mutation.
 
 ---
 
-## 11. Mutation contract
-
-### 11.1 JSON Patch
-
-Every mutation to a JSON artifact is expressed as an RFC 6902 JSON Patch.
-Patches are validated against the file's JSON Schema before application.
-
-### 11.2 Atomic multi-file patches
-
-A single mutation event can patch multiple files atomically. Adding a
-requirement typically requires patching `requirements.json`, `test_spec.json`,
-and `tasks.json` together. The transaction succeeds entirely or not at all.
-
-### 11.3 Per-actor permissions
-
-| File / scope | Operator | Coordinator | Archetype |
-|---|---|---|---|
-| `prd.md` frontmatter (mutable fields) | write | — | — |
-| `prd.md` frontmatter (protected fields) | — | library only | — |
-| `prd.md` body (Intent, pre-active) | write | — | — |
-| `prd.md` body (other sections) | write | — | — |
-| `architecture.md` | write | write | — |
-| `requirements.json` | write | write | — |
-| `test_spec.json` | — | write | — |
-| `tasks.json` (planning fields) | write | write | — |
-| `tasks.json` (subtask `state` only) | — | write | own assignment only |
-
-**Protected frontmatter fields** (library-managed, not directly writable by
-any actor): `status`, `spec_id`, `spec_name`, `created_at`, `supersedes`,
-`intent_hash`. These are modified only through library lifecycle transitions
-(§9). The operator writes mutable fields: `title`, `updated_at`, `owner`,
-`source`, `tags`.
-
-Archetypes can only transition their own task's state through legal
-transitions. Everything else routes through the coordinator.
-
----
-
-## 12. Rendering
+## 11. Rendering
 
 The library provides a renderer that produces markdown from JSON artifacts.
 Rendering is deterministic: same JSON in, same markdown out, byte-for-byte.
 
-### 12.1 Render targets
+### 11.1 Render targets
 
 | Target | Description |
 |---|---|
 | Per-file | Markdown rendering of one JSON file |
 | Combined | PRD markdown (as-is), then `architecture.md` (as-is, if present), followed by rendered JSON artifacts in order: requirements → test_spec → tasks |
 
-### 12.2 EARS rendering
+### 11.2 EARS rendering
 
 EARS sentences are rendered from decomposed fields using the templates in
 §6.2.1. The rendered form is a derived view, never the source of truth.

@@ -146,7 +146,6 @@ def load_spec(dir: Union[str, Path]) -> Spec:
         spec_id=prd.frontmatter.spec_id,
         spec_name=prd.frontmatter.spec_name,
         created_at=prd.frontmatter.created_at,
-        supersedes=list(prd.frontmatter.supersedes),
     )
 
     return spec
@@ -406,11 +405,6 @@ def _check_active_mutations(spec: Spec) -> None:
             f"Cannot modify created_at in active state: "
             f"was {snapshot.created_at!r}, now {fm.created_at!r}"
         )
-    if list(fm.supersedes) != list(snapshot.supersedes):
-        raise LifecycleError(
-            "Cannot modify supersedes in active state"
-        )
-
     # Check intent hash
     if fm.intent_hash is not None:
         from afspec.intent import compute_intent_hash

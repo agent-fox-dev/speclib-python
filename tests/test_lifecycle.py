@@ -12,7 +12,7 @@ import shutil
 from pathlib import Path
 
 import pytest
-from hypothesis import given
+from hypothesis import assume, given
 from hypothesis.strategies import text
 
 from afspec import (
@@ -495,7 +495,10 @@ def test_property_intent_hash_stability(body: str) -> None:
     """Same content with LF vs CRLF must produce the same hash.
 
     Only tests content normalisation (line endings), not heading changes.
+    Filters out bodies containing \\r since replace("\\n", "\\r\\n") cannot
+    produce a correct CRLF conversion when lone \\r is already present.
     """
+    assume("\r" not in body)
     full_body = f"# Title\n\n## Intent\n\n{body}\n\n## Goals\n\n- G\n"
     full_body_crlf = full_body.replace("\n", "\r\n")
 

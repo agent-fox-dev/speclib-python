@@ -83,7 +83,7 @@ def valid_transition(current: SubtaskState, target: SubtaskState) -> bool:
     """Check if a subtask state transition is legal.
 
     Returns True if the transition from current to target is in the legal
-    transition set defined in docs/spec-format.md section 7.3.1.
+    transition set defined in docs/spec-format.md section 8.3.1.
     """
     return (current, target) in _LEGAL_TRANSITIONS
 
@@ -398,7 +398,6 @@ class _ImmutableSnapshot(BaseModel):
     spec_id: str
     spec_name: str
     created_at: str
-    supersedes: list[str]
 
 
 class Spec(BaseModel):

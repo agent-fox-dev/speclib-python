@@ -114,7 +114,6 @@ def transition(spec: Spec, target: Status, dir: str | Path) -> Spec:
         spec_id=spec.prd.frontmatter.spec_id,
         spec_name=spec.prd.frontmatter.spec_name,
         created_at=spec.prd.frontmatter.created_at,
-        supersedes=list(spec.prd.frontmatter.supersedes),
     )
 
     return spec
