@@ -1,0 +1,11 @@
+[project]
+name = "speclib-python-examples"
+version = "0.1.0"
+description = "Examples using speclib-python (afspec)"
+requires-python = ">=3.14"
+dependencies = [
+    "afspec",
+]
+
+[tool.uv.sources]
+afspec = { path = "..", editable = true }
