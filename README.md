@@ -1,2 +1,4 @@
 # speclib-python
-Spec Lib Python Library
+
+Code from this repo was moved to agent-fox-dev/af-core.
+
